@@ -199,6 +199,18 @@ class TippingTable {
         }
     }
 
+    refreshTable() {
+        let tippeSystemTable = document.getElementById("table-systemtipping")
+        for (const oneRow of tippeSystemTable.rows) {
+            if (oneRow.rowIndex < 12) {
+                let systemMatchSets = this.tippingSystemModel.getSystemMatchSets(oneRow.rowIndex);
+                for (let i = 1; i < oneRow.cells.length; i++) {
+                    oneRow.cells[i].innerHTML = systemMatchSets[i - 1] ? "X" : "";
+                }                
+            }
+        }
+    }
+
     updateProgressBar() {
         let numberOfEmptyRows = this.tippingSystemModel.emptyRows.length;
         let targetNumberFilledRows = 8;
@@ -239,3 +251,17 @@ class TippingTable {
 
 var tippingSystemModel = new TippingSystem();
 var tippingSystemTable = new TippingTable(tippingSystemModel);
+
+
+var saveMatchTimer = setInterval(()=>{
+    localStorage.setItem("matchSets", JSON.stringify(tippingSystemModel.matchSets))
+}, 1000);
+
+
+
+window.onload = ()=>{
+    let storedMatches = JSON.parse(localStorage.getItem("matchSets"));
+    if (storedMatches) { tippingSystemModel.matchSets = JSON.parse(localStorage.getItem("matchSets"))};
+    console.log("document loaded")
+    tippingSystemTable.refreshTable()
+}
