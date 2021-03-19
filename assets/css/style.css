@@ -11,6 +11,10 @@
     border-right-width: 4px !important;
 }
 
+.fatline {
+    border-top: 4px solid #dee2e6;
+}
+
 
 th,
 td {
