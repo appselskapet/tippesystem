@@ -330,9 +330,6 @@ function onload() {
         tippingTable.updateProgressBar();
         tippingTable.refreshDeliveredCouponCheckBoxes();
     };
-<<<<<<< HEAD
-};
-=======
 
     $('#iframe-menu button').on("click", iframeNorskTippingNavigation);
     $('#system-buttons button').on("click", clearSystem);
@@ -363,4 +360,3 @@ function clearSystem() {
     tippingTable.refreshDeliveredCouponCheckBoxes();
     tippingTable.tippingSystemModel.storeSystem();
 };
->>>>>>> master
