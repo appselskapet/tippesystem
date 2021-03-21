@@ -10,8 +10,8 @@ class TippingSystem {
     constructor(matchCount = 12, setCount = 10) {
         this.setCount = setCount;
         this.matchSets = [];
-        this.emptyRows = [];
-        this.deliveredCoupons = [false, false, false, false, false, false, false, false, false ];
+        this.emptyRows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        this.deliveredCoupons = [];
         for (let set = 0; set < setCount; set++) {
             var matches = [];
             for (let matchId = 0; matchId < matchCount; matchId++) {
@@ -52,7 +52,7 @@ class TippingSystem {
         let lastEmptyRows = [];
         if (this.emptyRows.length > 4) {
             firstEmptyRows = this.emptyRows.slice(0, 4);
-            lastEmptyRows = this.emptyRows.slice(5,this.emptyRows.length);                
+            lastEmptyRows = this.emptyRows.slice(5, this.emptyRows.length);
         } else {
             firstEmptyRows = this.emptyRows;
             lastEmptyRows = [];
@@ -61,7 +61,7 @@ class TippingSystem {
         this.emptyRows.forEach((row, emptyRowIndex) => {
             for (let set = 0; set < this.setCount - 1; set++) {
                 if (emptyRowIndex < 4) {
-                    this.matchSets[set + 1][row].state = this.systemRows[emptyRowIndex][set] 
+                    this.matchSets[set + 1][row].state = this.systemRows[emptyRowIndex][set]
                 } else {
                     this.matchSets[set + 1][row].state = [false, false, false];
                 }
@@ -95,15 +95,19 @@ class TippingSystem {
     storeSystem() {
         let storedSystem = { "matchSets": this.matchSets, "emptyRows": this.emptyRows, "deliveredCoupons": this.deliveredCoupons };
         localStorage.setItem("storedSystem", JSON.stringify(storedSystem));
-
     }
 
     setDeliveredCoupon(couponId, value) {
-        this.deliveredCoupons[couponId] = value;
+        if (value && !this.deliveredCoupons.includes(couponId)) {
+            this.deliveredCoupons.push(couponId);            
+        } else if (!value && this.deliveredCoupons.includes(couponId)) {
+            this.deliveredCoupons.pop(couponId)
+        }
+        this.storeSystem();
     }
-    
-    getDeliveredCouponState(couponId) {
-        return this.deliveredCoupons[couponId];
+
+    getDeliveredCouponState(couponId) {
+        return this.deliveredCoupons.includes(couponId);
     }
 
     updateSystem(rowNumber) {
@@ -133,7 +137,6 @@ class TippingSystem {
             }
             matchSetsExpanded.push(oneRow);
         }
-        console.log(matchSetsExpanded)
         return matchSetsExpanded;
     }
 }
@@ -150,7 +153,7 @@ class TippingTable {
         model.setDeliveredCoupon(couponId, value);
     }
 
-    getDeliveredCouponState(model, couponId) {
+    getDeliveredCouponState(model, couponId) {
         return model.getDeliveredCouponState(couponId);
     }
 
@@ -162,14 +165,13 @@ class TippingTable {
         div.setAttribute("data-toggle", "buttons");
         let label = document.createElement("label");
         label.classList.add("btn", "btn-outline-success");
+        label.id = couponNumber;
         let input = document.createElement("input");
         input.type = "checkbox";
         input.autocomplete = "off";
-        input.id = couponNumber;
         input.onclick = (e) => {
-            this.setDeliveredCoupon(this.tippingSystemModel, e.target.id - 1, e.target.checked);
+            this.setDeliveredCoupon(this.tippingSystemModel, parseInt(e.target.parentNode.id), e.target.checked);
         }
-
         label.appendChild(input);
         div.appendChild(label);
         cell.appendChild(div);
@@ -218,10 +220,11 @@ class TippingTable {
             if (row !== 0 && row % 3 === 0) {
                 tr.classList.add("fatline");
             }
-            
+
             systemTippingTBody.appendChild(tr);
         }
         const checkBoxRow = document.createElement("tr");
+        checkBoxRow.id = "check-box-row";
         const thCheckBox = document.createElement("th");
         thCheckBox.setAttribute("scope", "row");
         checkBoxRow.appendChild(thCheckBox);
@@ -256,7 +259,6 @@ class TippingTable {
             if (oneRow.rowIndex < 12) {
                 let rowCells = oneRow.getElementsByTagName("td");
                 for (let i = 0; i < rowCells.length; i++) {
-                    console.log(rowCells.length)
                     rowCells[i].innerHTML = allMatchSets[oneRow.rowIndex][i] ? "X" : "";
                 }
             }
@@ -264,11 +266,17 @@ class TippingTable {
     }
 
     refreshDeliveredCouponCheckBoxes() {
-        let allCheckBoxes = document.getElementsByClassName("btn");
-        console.log(allCheckBoxes)
-        Array.from(allCheckBoxes).forEach((checkBox, index)=>{
-            checkBox.classList.toggle("active", this.getDeliveredCouponState(this.tippingSystemModel, index));
-            console.log("checkbox set to: " + this.getDeliveredCouponState(this.tippingSystemModel, index));
+        let allCheckBoxes = document.getElementById("check-box-row").getElementsByTagName("label");
+        Array.from(allCheckBoxes).forEach((checkBox) => {
+
+            let checkboxId = parseInt(checkBox.id);
+
+            if (this.getDeliveredCouponState(this.tippingSystemModel, checkboxId)) {
+                checkBox.classList.add("active");
+                checkBox.firstChild.checked = true;
+            } else {
+                checkBox.classList.remove("active");
+            }
         });
     }
 
@@ -276,7 +284,7 @@ class TippingTable {
         let numberOfEmptyRows = this.tippingSystemModel.emptyRows.length;
         let targetNumberFilledRows = 8;
         let currentFilledRows = 12 - numberOfEmptyRows;
-        var progressBar = document.getElementById("system-progress");
+        let progressBar = document.getElementById("system-progress");
         progressBar.setAttribute("aria-valuenow", currentFilledRows / targetNumberFilledRows);
         progressBar.style.width = (currentFilledRows / targetNumberFilledRows) * 100 + "%";
         progressBar.innerHTML = currentFilledRows + "/" + targetNumberFilledRows;
@@ -308,10 +316,11 @@ class TippingTable {
 
 window.addEventListener("load", onload);
 
+var tippingSystem = new TippingSystem();
+var tippingTable = new TippingTable(tippingSystem);
+
 function onload() {
-    var tippingSystem = new TippingSystem();
     var storedSystem = JSON.parse(localStorage.getItem("storedSystem"));
-    var tippingTable = new TippingTable(tippingSystem);
 
     if (storedSystem) {
         tippingTable.tippingSystemModel.emptyRows = storedSystem.emptyRows;
@@ -321,4 +330,33 @@ function onload() {
         tippingTable.updateProgressBar();
         tippingTable.refreshDeliveredCouponCheckBoxes();
     };
+
+    $('#iframe-menu button').on("click", iframeNorskTippingNavigation);
+    $('#system-buttons button').on("click", clearSystem);
+};
+
+const iframeNorskTippingNavigation = function () {
+    document.getElementById('iframe-norsk-tipping').src = norskTippingLinks[this.id];
+}
+
+const norskTippingLinks = {
+    "midweek": "https://www.norsk-tipping.no/sport/tipping/spill?day=3",
+    "saturday": "https://www.norsk-tipping.no/sport/tipping/spill?day=1",
+    "sunday": "https://www.norsk-tipping.no/sport/tipping/spill?day=2",
+    "results": "https://www.norsk-tipping.no/sport/tipping/resultater"
+};
+
+function clearSystem() {
+    console.log("clearing")
+    tippingTable.tippingSystemModel.emptyRows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    tippingTable.tippingSystemModel.matchSets.forEach((set) => {
+        set.forEach((match) => {
+            match.state = [false, false, false]
+        })
+    });
+    tippingTable.tippingSystemModel.deliveredCoupons.length = 0;
+    tippingTable.refreshTable();
+    tippingTable.updateProgressBar();
+    tippingTable.refreshDeliveredCouponCheckBoxes();
+    tippingTable.tippingSystemModel.storeSystem();
 };
