@@ -14,32 +14,49 @@
 
 <body>
     <div class="container">
-        <h1>The System</h1>
-        <div class="progress">
-            <div id="system-progress" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="0"
-                aria-valuemin="0" aria-valuemax="200">0/8</div>
+        <div class="row">
+            <div class="col">
+                <h1>The System</h1>
+            </div>
         </div>
-        <br>
-        <table class="table table-bordered table-sm" id="table-systemtipping">
-        </table>
-        <h4>Systemnøkkel</h4>
-        <ul class="list-unstyled">
-            <li>1x2 1x2 1x2</li>
-            <li>21x x21 1x2</li>
-            <li>x21 21x 1x2</li>
-            <li>111 xxx 222</li>
-        </ul>
-        <h4>Standard setup</h4>
-        <ul class="list-unstyled">
-            <li>1 hel</li>
-            <li>3 halv</li>
-            <li>4 sikre</li>
-        </ul>
+        <div class="row">
+            <div class="col">
+                <div id="iframe-menu" role="group" aria-label="Basic example" class="btn-group-sm button-menu">
+                    <button id="midweek" type="button" class="btn btn-secondary">Midtuke</button>
+                    <button id="saturday" type="button" class="btn btn-secondary">Lørdag</button>
+                    <button id="sunday" type="button" class="btn btn-secondary">Søndag</button>
+                    <button id="results" type="button" class="btn btn-secondary">Resultater</button>
+                </div>
+                <iframe id="iframe-norsk-tipping" class="iframe-norsk-tipping" src="http://www.norsk-tipping.no/sport/tipping"></iframe>
+            </div>
 
+            <div class="col">
+                <div id="system-buttons" role="group" aria-label="Basic example" class="btn-group-sm button-menu">
+                    <button id="clear" type="button" class="btn btn-secondary">Tøm skjema</button>
+                </div>
+                <div class="progress system-progress">
+                    <div id="system-progress" class="progress-bar progress-bar-striped" role="progressbar"
+                        style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="200"></div>
+                </div>
+                <table class="table table-bordered table-sm" id="table-systemtipping">
+                </table>
+                <h4>Systemnøkkel</h4>
+                <ul class="list-unstyled">
+                    <li>1x2 1x2 1x2</li>
+                    <li>21x x21 1x2</li>
+                    <li>x21 21x 1x2</li>
+                    <li>111 xxx 222</li>
+                </ul>
+                <h4>Standard setup</h4>
+                <ul class="list-unstyled">
+                    <li>1 hel</li>
+                    <li>3 halv</li>
+                    <li>4 sikre</li>
+                </ul>
+            </div>
+        </div>
     </div>
-
     <script src="assets/js/main.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
