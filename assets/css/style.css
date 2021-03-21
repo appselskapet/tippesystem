@@ -23,11 +23,11 @@ td {
 
 .iframe-norsk-tipping {
     border: none;
-    height: 530px;
+    height: 900px;
     overflow: hidden;
     border-radius: 15px;
     width: 100%;
-    max-width: 400px;
+    max-width: 700px;
     min-width: 300px;
     margin-bottom: 20px;
 }
@@ -38,4 +38,23 @@ td {
 
 .system-progress {
     margin-bottom: 15px;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6;
+        border-left-width: 1px;
+}
+.table-sm td, .table-sm th {
+    padding: .3rem;
+}
+.table td, .table th {
+    padding: .3rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee
+    2e6;
+    height: 42px;
+}
+
+.info-row {
+    padding-bottom: 108px;
 }
